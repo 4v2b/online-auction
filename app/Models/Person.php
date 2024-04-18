@@ -10,4 +10,14 @@ class Person extends Model
     use HasFactory;
 
     protected $table = 'people';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'profile_picture'
+    ];
 }
