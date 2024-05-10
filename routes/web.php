@@ -8,12 +8,19 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// Route::get('/', function () {
+//     return Inertia::render('Welcome', [
+//         'canLogin' => Route::has('login'),
+//         'canRegister' => Route::has('register'),
+//         'laravelVersion' => Application::VERSION,
+//         'phpVersion' => PHP_VERSION,
+//     ]);
+// });
+
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
+    return Inertia::render('Home', [
         'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
+        'canRegister' => Route::has('register')
     ]);
 });
 
@@ -35,7 +42,7 @@ Route::get('/lots/{id}', function (int $id){
 
 });
 
-Route::get('/{category_id}', function (int $category_id){
+Route::get('/category/{id}', function (int $id){
 
 });
 
@@ -48,10 +55,10 @@ Route::get('/tracked-lots', function (){
 });
 
 Route::middleware('auth')->controller(LotsManagementController::class)->group(function () {
-    Route::get('/user-lots', 'index');
+    Route::get('/user-lots', 'showAll');
     Route::get('/user-lots/{id}', 'show');
     Route::get('/user-lots/{id}/edit', 'edit');
-    Route::patch('/user-lots/{id}', 'update');
+    Route::patch('/user-lots/{lot}', 'update');
     Route::delete('/user-lots/{id}', 'destroy');
     Route::get('/user-lots/create', 'create');
     Route::post('/user-lots', 'store');
