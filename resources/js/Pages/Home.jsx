@@ -11,9 +11,8 @@ export default function Home({ auth, laravelVersion, phpVersion }) {
     return (
         <>
             <Head title="Home" />
-            <header className="grid grid-cols-2 items-center gap-2 py-10 lg:grid-cols-3">
 
-                <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+                <nav class="navbar navbar-expand-md navbar-light bg-dark">
 
                     {auth.user ? (
                         <>
@@ -53,14 +52,13 @@ export default function Home({ auth, laravelVersion, phpVersion }) {
                     </form>
                 </nav>
 
-            </header>
 
             <main className="mt-6">
 
             </main>
 
             <footer className="py-16 text-center text-sm text-black dark:text-white/70">
-                Laravel v{laravelVersion} (PHP v{phpVersion})
+
             </footer>
 
         </>
