@@ -47,12 +47,15 @@ Route::get('/category/{id}', function (int $id){
 });
 
 Route::get('/menu', function (){
+    return Inertia::render('Menu',  [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register')
+    ]);
+})->name('menu')->middleware('auth');
 
-});
+Route::get('/wishlist', function (){
 
-Route::get('/tracked-lots', function (){
-
-});
+})->name('wishlist');
 
 Route::middleware('auth')->controller(LotsManagementController::class)->group(function () {
     Route::get('/user-lots', 'showAll');

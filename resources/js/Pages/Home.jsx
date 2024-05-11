@@ -1,3 +1,4 @@
+import Navbar from '@/Components/Navbar';
 import { Link, Head } from '@inertiajs/react';
 
 export default function Home({ auth, laravelVersion, phpVersion }) {
@@ -8,50 +9,17 @@ export default function Home({ auth, laravelVersion, phpVersion }) {
         document.getElementById('background')?.classList.add('!hidden');
     };
 
+    const categories = [
+        {id:1, name: 'Смартфони'},
+        {id:2, name: 'Авто'},
+        {id:3, name: 'Меблі'}
+    ];
+
     return (
         <>
             <Head title="Home" />
 
-                <nav class="navbar navbar-expand-md navbar-light bg-dark">
-
-                    {auth.user ? (
-                        <>
-                            <Link
-                                href={route('dashboard')}
-                                className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                            >
-                                Profile
-                            </Link>
-                            <Link
-                                href={route('logout')}
-                                className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                            >
-                                Log Out
-                            </Link>
-
-                        </>
-                    ) : (
-                        <>
-                            <Link
-                                href={route('login')}
-                                className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                            >
-                                Log in
-                            </Link>
-                            <Link
-                                href={route('register')}
-                                className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                            >
-                                Register
-                            </Link>
-                        </>
-                    )}
-
-                    <form class="form-inline my-2 my-md-0">
-                        <input class="form-control" type="text" placeholder="Search"></input>
-                    </form>
-                </nav>
-
+            <Navbar auth={auth} categories={categories}></Navbar>
 
             <main className="mt-6">
 
