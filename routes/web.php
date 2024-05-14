@@ -4,7 +4,12 @@ use App\Http\Controllers\BidsController;
 use App\Http\Controllers\LotsManagementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserInfoController;
+use App\Models\Contact;
+use App\Models\ContactType;
+use App\Models\Person;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -34,50 +39,62 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/catalog', function (){
-
+Route::get('/catalog', function () {
 });
 
-Route::get('/lots/{id}', function (int $id){
-
+Route::get('/lots/{id}', function (int $id) {
 });
 
-Route::get('/category/{id}', function (int $id){
-
+Route::get('/category/{id}', function (int $id) {
 });
 
-Route::get('/menu', function (){
+Route::get('/menu', function () {
     return Inertia::render('Menu',  [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register')
     ]);
 })->name('menu')->middleware('auth');
 
-Route::get('/wishlist', function (){
-
+Route::get('/wishlist', function () {
 })->name('wishlist');
 
 Route::middleware('auth')->controller(LotsManagementController::class)->group(function () {
-    Route::get('/user-lots', 'showAll');
-    Route::get('/user-lots/{id}', 'show');
-    Route::get('/user-lots/{id}/edit', 'edit');
-    Route::patch('/user-lots/{lot}', 'update');
-    Route::delete('/user-lots/{id}', 'destroy');
-    Route::get('/user-lots/create', 'create');
+    Route::get('/user-lots', 'showAll')->name('lot.all');
+    //Route::get('/user-lots/{id}', 'show')->name('lot.show');
+    Route::get('/user-lots/{id}/edit', 'edit')->name('lot.edit');
+    Route::patch('/user-lots', 'update')->name('lot.update');
+    Route::delete('/user-lots', 'destroy')->name('lot.destroy');
+    Route::get('/user-lots/create', 'create')->name('lot.create');
     Route::post('/user-lots', 'store');
 });
 
 Route::middleware('auth')->controller(BidsController::class)->group(function () {
-    Route::get('/bids', 'index');
+    Route::get('/bids', 'showAll');
     Route::get('/bids/{id}', 'show');
-    Route::delete('/bids/{id}', 'remove'); 
+    Route::delete('/bids', 'remove');
 });
 
-Route::middleware('auth')->controller(UserInfoController::class)->group(function () {
-    Route::get('/userinfo', 'index');
-    Route::get('/userinfo/edit', 'edit');
-    Route::patch('/userinfo', 'update'); 
+Route::middleware('auth')->group(function () {
+
+    Route::get('/userinfo', function () {
+        $user_id = Auth::id();
+
+        $person = Person::select('avatar', 'name')->find($user_id);
+        $contacts = Contact::select('value', 'contact_type_id', 'id')::where('person_id', $user_id)->get();
+        $contactTypes = ContactType::all();
+
+        Inertia::render(
+            'UserInfo',
+            [
+                'person' => $person,
+                'contacts' => $contacts,
+                'contactTypes' => $contactTypes
+            ]
+        );
+    });
+
+    Route::post('/userinfo', function (Request $q) {
+    });
 });
 
-
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
