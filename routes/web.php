@@ -79,11 +79,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/userinfo', function () {
         $user_id = Auth::id();
 
-        $person = Person::select('avatar', 'name')->find($user_id);
-        $contacts = Contact::select('value', 'contact_type_id', 'id')::where('person_id', $user_id)->get();
+        $person = Person::select('profile_picture', 'name')->where('user_id',$user_id);
+        $contacts = Contact::select('value', 'contact_type_id', 'id')->where('person_id', $user_id)->get();
         $contactTypes = ContactType::all();
 
-        Inertia::render(
+        return Inertia::render(
             'UserInfo',
             [
                 'person' => $person,

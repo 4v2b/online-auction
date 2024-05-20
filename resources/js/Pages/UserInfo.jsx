@@ -1,17 +1,14 @@
 import { router } from "@inertiajs/react";
 import { useState } from "react";
-import { Form } from "react-bootstrap";
+import { Form, Button, Row, Col } from "react-bootstrap";
 import Contacts from "@/Components/ContactsForm";
 
 export default function UserInfo({ person, contacts, contactTypes }) {
     const [values, setValues] = useState({
         name: person.name,
-        contacts: contacts
+        avatar: person.profile_picture,
+        contacts: contacts,
     });
-    //const [contacts, setContacts] = useState([]);
-    const [username, setUsername] = useState(person.name);
-
-    //Todo pass stored contacts in ContactForms as 
 
     function handleChange(e) {
         const key = e.target.id;
@@ -19,20 +16,34 @@ export default function UserInfo({ person, contacts, contactTypes }) {
         setValues({ ...values, [key]: value });
     };
 
-    function handleAddContact () {
-        setContacts([...contacts, { type: '', value: '' }]);
+    const handleFileChange = (e) => {
+        setValues({
+            ...values,
+            avatar: e.target.files[0],
+        });
     };
 
-    function handleContactChange (id, type_id, value) {
-        const updatedContacts = [...contacts];
-        updatedContacts[index][key] = value;
-        setContacts(updatedContacts);
+    const handleContactChange = (id, field, value) => {
+        setValues({
+            ...values,
+            contacts: values.contacts.map(contact =>
+                contact.id === id ? { ...contact, [field]: value } : contact
+            ),
+        });
     };
 
-    function handleContactRemove (id){
-        const updatedContacts = [...contacts];
-        updatedContacts.splice(index, 1);
-        setContacts(updatedContacts);
+    const addContact = () => {
+        setValues({
+            ...values,
+            contacts: [...values.contacts, { id: `${-1*Date.now()}`, value: '', contact_type_id: contactTypes[0].id }],
+        });
+    };
+
+    const removeContact = (id) => {
+        setValues({
+            ...values,
+            contacts: values.contacts.filter(contact => contact.id !== id),
+        });
     };
 
     function handleSubmit(e){
@@ -48,10 +59,53 @@ export default function UserInfo({ person, contacts, contactTypes }) {
                     <Form.Label>
                         Ім'я користувача
                     </Form.Label>
-                    <Form.Control onChange={handleChange} type="text">{username}</Form.Control>
+                    <Form.Control onChange={handleChange} type="text">{values.name}</Form.Control>
                 </Form.Group>
-            //Todo making avatar
-                <Contacts></Contacts>
+
+                <Form.Group controlId="avatar">
+                    <Form.Label>Аватар</Form.Label>
+                    <Form.Control
+                        type="file"
+                        name="avatar"
+                        onChange={handleFileChange}
+                    />
+                </Form.Group>
+
+                {values.contacts.map((contact, index) => (
+                    <Row key={contact.id} className="mb-3">
+                        <Col md={5}>
+                            <Form.Group controlId={`contact-value-${contact.id}`}>
+                                <Form.Label>Контакт</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={contact.value}
+                                    onChange={(e) => handleContactChange(contact.id, 'value', e.target.value)}
+                                />
+                            </Form.Group>
+                        </Col>
+                        <Col md={5}>
+                            <Form.Group controlId={`contact-type-${contact.id}`}>
+                                <Form.Label>Тип контакту</Form.Label>
+                                <Form.Control
+                                    as="select"
+                                    value={contact.contact_type_id}
+                                    onChange={(e) => handleContactChange(contact.id, 'contact_type_id', e.target.value)}
+                                >
+                                    {contactTypes.map(type => (
+                                        <option key={type.id} value={type.id}>
+                                            {type.name}
+                                        </option>
+                                    ))}
+                                </Form.Control>
+                            </Form.Group>
+                        </Col>
+                        <Col md={2} className="d-flex align-items-end">
+                            <Button variant="danger" onClick={() => removeContact(contact.id)}>Видалити</Button>
+                        </Col>
+                    </Row>
+                ))}
+                
+                <Button variant="primary" onClick={addContact}>Додати контакт</Button>
                 <Button variant="danger" type='submit'>
                     Зберегти зміни
                 </Button>
