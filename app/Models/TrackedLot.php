@@ -18,4 +18,7 @@ class TrackedLot extends Model
         'user_id',
         'lot_id'
     ];
+
+    public $timestamps = false;
+
 }

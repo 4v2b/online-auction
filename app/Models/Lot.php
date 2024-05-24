@@ -14,10 +14,14 @@ class Lot extends Model
      *
      * @var array<int, string>
      */
+
+    public $timestamps = false;
+
     protected $fillable = [
         'title',
         'description',
         'ends_at',
-        'start_price'
+        'start_price',
+        'user_id'
     ];
 }

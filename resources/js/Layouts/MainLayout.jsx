@@ -1,19 +1,14 @@
-import Authenticated from "@/Layouts/AuthenticatedLayout";
-import Guest from "@/Layouts/GuestLayout";
+import NavBar from "@/Components/NavBar";
+import { Head } from "@inertiajs/react";
 
-export default function MainLayout({ auth, header, children }) {
-    
+export default function MainLayout({ children }) {
+
     return (
         <>
-            {auth.user ?
-                (<Authenticated user={auth.user} header={header}>
-                    {children}
-                </Authenticated>)
-                :
-                (<Guest>
-                    {children}
-                </Guest>)
-            }
+            <NavBar />
+            <main>
+                {children}
+            </main>
         </>
     );
 }

@@ -1,19 +1,31 @@
-import { DropdownButton } from 'react-bootstrap';
-import Dropdown from 'react-bootstrap/Dropdown';
-export default function SearchBar({ categories }) {
+import { Form, FormControl, Button, DropdownButton, Dropdown } from 'react-bootstrap';
+import {Search} from 'react-bootstrap-icons'
 
-    const categoryList = categories.map(el => {
-        return (<Dropdown.Item href={`/category/${el.id}`}>{el.name}</Dropdown.Item>)
-    });
+export default function SearchBar({ categories }) {
+    const categoryList = categories.map((el) => (
+        <Dropdown.Item key={el.id} href={`/category/${el.id}`}>
+            {el.name}
+        </Dropdown.Item>
+    ));
+
+    function handleSubmit(){
+
+    }
 
     return (
-        <div className='d-flex'>
-            <form className="d-flex">
-                <input className="form-control me-2" type="search" placeholder="Знайти" aria-label="Search"></input>
-                <button className="btn btn-outline-success" type="submit">Пошук</button>
-            </form>
-
-            <DropdownButton variant='secondary' title='Категорії'>
+        <div className="d-flex align-items-center">
+            <Form className="d-flex me-3">
+                <FormControl
+                    type="search"
+                    placeholder="Знайти"
+                    className="me-2"
+                    aria-label="Search"
+                />
+                <Button variant="outline-success" onClick={handleSubmit}>
+                    <Search/>
+                </Button>
+            </Form>
+            <DropdownButton variant="secondary" title="Категорії">
                 {categoryList}
             </DropdownButton>
         </div>

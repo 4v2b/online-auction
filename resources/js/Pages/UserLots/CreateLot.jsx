@@ -1,12 +1,12 @@
 import { Form, Button } from "react-bootstrap";
 import { useState } from "react";
-import { router } from '@inertiajs/react'
-import Navbar from "@/Components/Navbar";
+import { router, usePage } from '@inertiajs/react'
+import MenuLayout from "@/Layouts/MenuLayout";
 
 //Todo add expiration date of lot in form
 //Todo (optional) remake page using useForm from Inertia
 
-export default function CreateLot({ categories }) {
+export default function CreateLot() {
     const [values, setValues] = useState({
         lotName: "",
         lotDesc: "",
@@ -15,6 +15,7 @@ export default function CreateLot({ categories }) {
         selectedCategories: [],
         tradeEndTime: ''
     });
+    const { categories } = usePage().props;
 
     const handleCategoryChange = (e) => {
         const { value, checked } = e.target;
@@ -47,8 +48,7 @@ export default function CreateLot({ categories }) {
     };
 
     return (
-        <>
-            <Navbar auth={{ user: true }} categories={categories}></Navbar>
+        <MenuLayout>
             <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="lotName" className="mb-3">
                     <Form.Label>Назва лоту</Form.Label>
@@ -78,6 +78,6 @@ export default function CreateLot({ categories }) {
                     Опублікувати
                 </Button>
             </Form>
-        </>
+        </MenuLayout>
     );
 }

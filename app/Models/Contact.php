@@ -19,4 +19,7 @@ class Contact extends Model
         'person_id',
         'contact_type_id'
     ];
+
+    public $timestamps = false;
+
 }

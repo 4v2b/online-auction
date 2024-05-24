@@ -23,11 +23,8 @@ use Inertia\Inertia;
 // });
 
 Route::get('/', function () {
-    return Inertia::render('Home', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register')
-    ]);
-});
+    return Inertia::render('Home');
+})->name('home');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -48,14 +45,16 @@ Route::get('/lots/{id}', function (int $id) {
 Route::get('/category/{id}', function (int $id) {
 });
 
-Route::get('/menu', function () {
-    return Inertia::render('Menu',  [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register')
-    ]);
-})->name('menu')->middleware('auth');
+// Route::get('/menu', function () {
+//     return Inertia::render('UserInfo');
+// })->name('menu')->middleware(['auth', 'verified']);
 
 Route::get('/wishlist', function () {
+    //todo wishlist loading
+})->name('wishlist');
+
+Route::delete('/wishlist', function () {
+    
 })->name('wishlist');
 
 Route::middleware('auth')->controller(LotsManagementController::class)->group(function () {
@@ -74,7 +73,7 @@ Route::middleware('auth')->controller(BidsController::class)->group(function () 
     Route::delete('/bids', 'remove');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/userinfo', function () {
         $user_id = Auth::id();
@@ -91,7 +90,7 @@ Route::middleware('auth')->group(function () {
                 'contactTypes' => $contactTypes
             ]
         );
-    });
+    })->name('userinfo');
 
     Route::post('/userinfo', function (Request $q) {
     });

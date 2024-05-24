@@ -1,10 +1,10 @@
 
-import Navbar from '@/Components/Navbar';
 import { Link, Head } from '@inertiajs/react';
 import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
 import Row from 'react-bootstrap/Row';
 import { Carousel, Container, Form, Image, ListGroup } from 'react-bootstrap';
+import MainLayout from '@/Layouts/MainLayout';
 
 
 export default function LotPage({ auth, categories, lot, photos, bids }) {
@@ -20,8 +20,7 @@ export default function LotPage({ auth, categories, lot, photos, bids }) {
     })
 
     return (
-        <>
-            <Navbar auth={auth} categories={categories}></Navbar>
+        <MainLayout>
             <Container>
                 <Row>
                     <Col xs={9} md={6}>
@@ -61,6 +60,6 @@ export default function LotPage({ auth, categories, lot, photos, bids }) {
                     </Col>
                 </Row>
             </Container>
-        </>
+        </MainLayout>
     );
 }

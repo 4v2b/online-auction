@@ -15,7 +15,10 @@ class Photo extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'photo',
+        'path',
         'lot_id'
     ];
+
+    public $timestamps = false;
+
 }

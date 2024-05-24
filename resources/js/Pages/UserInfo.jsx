@@ -2,6 +2,7 @@ import { router } from "@inertiajs/react";
 import { useState } from "react";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import Contacts from "@/Components/ContactsForm";
+import MenuLayout from "@/Layouts/MenuLayout";
 
 export default function UserInfo({ person, contacts, contactTypes }) {
     const [values, setValues] = useState({
@@ -52,7 +53,7 @@ export default function UserInfo({ person, contacts, contactTypes }) {
     }
 
     return (
-        <>
+        <MenuLayout>
             <h2>Контактні дані</h2>
             <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="name">
@@ -110,6 +111,6 @@ export default function UserInfo({ person, contacts, contactTypes }) {
                     Зберегти зміни
                 </Button>
             </Form>
-        </>
+        </MenuLayout>
     );
 }

@@ -1,45 +1,37 @@
-import Navbar from '@/Components/Navbar';
+import Navbar from '@/Components/NavBar';
 import { Link, Head } from '@inertiajs/react';
 import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
 import Row from 'react-bootstrap/Row';
 import { Container } from 'react-bootstrap';
-import UserInfo from './UserInfo';
+import UserInfo from '../Pages/UserInfo';
+import MainLayout from './MainLayout';
 
 
-export default function Menu({ auth }) {
-    const categories = [
-        { id: 1, name: 'Смартфони' },
-        { id: 2, name: 'Авто' },
-        { id: 3, name: 'Меблі' }
-    ];
+export default function MenuLayout({children}) {
 
     return (
-        <>
-            <Head title="Menu" />
-
-            <Navbar auth={auth} categories={categories}></Navbar>
-
+        <MainLayout>
             <Container>
                 <Row>
                     <Col sm={3}>
                         <Nav className="flex-column">
                             <Nav.Link href={route('lot.all')}>Лоти</Nav.Link>
                             <Nav.Link href={route('wishlist')}>Ставки</Nav.Link>
-                            <Nav.Link href={route('wishlist')}>Персональні дані</Nav.Link>
+                            <Nav.Link href={route('userinfo')}>Персональні дані</Nav.Link>
                             <Nav.Link href={route('wishlist')}>Список бажаного</Nav.Link>
                         </Nav>
                     </Col>
                     <Col sm={9}>
-
+                        {children}
                     </Col>
                 </Row>
             </Container>
 
-            <footer className="py-16 text-center text-sm text-black dark:text-white/70">
+            <footer>
 
             </footer>
 
-        </>
+        </MainLayout>
     );
 }

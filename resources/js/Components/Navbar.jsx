@@ -1,54 +1,45 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
+import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Heart } from 'react-bootstrap-icons';
 import SearchBar from './SearchBar';
 
-export default function Navbar({ auth, categories }) {
+export default function NavBar() {
+
+    const { auth, categories } = usePage().props;
 
     return (
-        <nav class="navbar navbar-expand-md navbar-light bg-light">
-            <div class="container-fluid">
+        <Navbar bg="light" expand="md" className="mb-4">
+            <Container fluid>
+                <SearchBar categories={categories} />
 
-                <SearchBar categories={categories}></SearchBar>
-
-                {auth.user ? (
-                    <>
-                        <Link
-                            href={route('menu')}
-                            className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                        >
-                            Профіль
-                        </Link>
-                        <Link
-                            href={route('logout')} method='post'
-                            className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                        >
-                            Вийти
-                        </Link>
-
-                    </>
-                ) : (
-                    <>
-                        <Link
-                            href={route('wishlist')}
-                            className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                        >
-                            <Heart />
-                        </Link>
-                        <Link
-                            href={route('login')}
-                            className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                        >
-                            Ввійти
-                        </Link>
-                        <Link
-                            href={route('register')}
-                            className="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                        >
-                            Зареєструватися
-                        </Link>
-                    </>
-                )}
-            </div>
-        </nav>
+                <Navbar.Toggle aria-controls="navbar-nav" />
+                <Navbar.Collapse id="navbar-nav">
+                    <Nav className="ms-auto d-flex align-items-center">
+                        {auth.user ? (
+                            <>
+                                <Nav.Link as={Link} href={route('wishlist')} aria-label="Wishlist">
+                                    <Heart className="me-2" />
+                                </Nav.Link>
+                                <Nav.Link as={Link} href={route('userinfo')}>
+                                    Профіль
+                                </Nav.Link>
+                                <Nav.Link as={Link} href={route('logout')} method="post">
+                                    Вийти
+                                </Nav.Link>
+                            </>
+                        ) : (
+                            <>
+                                <Nav.Link as={Link} href={route('login')}>
+                                    Ввійти
+                                </Nav.Link>
+                                <Nav.Link as={Link} href={route('register')}>
+                                    Зареєструватися
+                                </Nav.Link>
+                            </>
+                        )}
+                    </Nav>
+                </Navbar.Collapse>
+            </Container>
+        </Navbar>
     );
 }

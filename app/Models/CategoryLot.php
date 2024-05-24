@@ -9,6 +9,7 @@ class CategoryLot extends Model
 {
     use HasFactory;
     protected $table = 'categories_lots';
+    public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.
