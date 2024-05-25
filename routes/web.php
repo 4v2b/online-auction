@@ -1,11 +1,12 @@
 <?php
 
 use App\Http\Controllers\BidsController;
-use App\Http\Controllers\LotsManagementController;
+use App\Http\Controllers\LotsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserInfoController;
 use App\Models\Contact;
 use App\Models\ContactType;
+use App\Models\Lot;
 use App\Models\Person;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
@@ -39,7 +40,10 @@ Route::middleware('auth')->group(function () {
 Route::get('/catalog', function () {
 });
 
-Route::get('/lots/{id}', function (int $id) {
+Route::get('/lots/{lot}', function (Lot $lot) {
+    return Inertia::render('LotPage', [
+        'lot' => $lot
+    ]);
 });
 
 Route::get('/category/{id}', function (int $id) {
@@ -57,12 +61,11 @@ Route::delete('/wishlist', function () {
     
 })->name('wishlist');
 
-Route::middleware('auth')->controller(LotsManagementController::class)->group(function () {
+Route::middleware('auth')->controller(LotsController::class)->group(function () {
     Route::get('/user-lots', 'showAll')->name('lot.all');
-    //Route::get('/user-lots/{id}', 'show')->name('lot.show');
-    Route::get('/user-lots/{id}/edit', 'edit')->name('lot.edit');
-    Route::patch('/user-lots', 'update')->name('lot.update');
-    Route::delete('/user-lots', 'destroy')->name('lot.destroy');
+    Route::get('/lots/{id}/edit', 'edit')->name('lot.edit');
+    Route::put('/user-lots', 'update')->name('lot.update');
+    Route::delete('/lots/{lot}', 'destroy')->name('lot.destroy');
     Route::get('/user-lots/create', 'create')->name('lot.create');
     Route::post('/user-lots', 'store');
 });
@@ -70,7 +73,7 @@ Route::middleware('auth')->controller(LotsManagementController::class)->group(fu
 Route::middleware('auth')->controller(BidsController::class)->group(function () {
     Route::get('/bids', 'showAll');
     Route::get('/bids/{id}', 'show');
-    Route::delete('/bids', 'remove');
+    Route::delete('/bids/{bid}', 'destroy');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

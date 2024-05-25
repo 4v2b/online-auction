@@ -1,30 +1,39 @@
 import { Form, Button } from "react-bootstrap";
-import { useState } from "react";
-import { router, usePage } from '@inertiajs/react'
 import MenuLayout from "@/Layouts/MenuLayout";
-
-//Todo add expiration date of lot in form
-//Todo (optional) remake page using useForm from Inertia
+import { useForm, usePage } from '@inertiajs/react';
 
 export default function CreateLot() {
-    const [values, setValues] = useState({
+    const { data, setData, post, errors } = useForm({
         lotName: "",
         lotDesc: "",
-        photos: [],
+        photos: null,
         startBid: "",
         selectedCategories: [],
-        tradeEndTime: ''
+        tradeEndTime: '',
+        _method: 'post'
     });
     const { categories } = usePage().props;
 
     const handleCategoryChange = (e) => {
         const { value, checked } = e.target;
         if (checked) {
-            setValues({ ...values, selectedCategories: [...values.selectedCategories, value] });
+            setData('selectedCategories', [...data.selectedCategories, value]);
         } else {
-            setValues({ ...values, selectedCategories: values.selectedCategories.filter(cat => cat !== value) });
+            setData('selectedCategories', data.selectedCategories.filter(cat => cat !== value));
         }
     };
+
+    function handlePhotoUpload(e) {
+        const chosenFiles = Array.prototype.slice(e.target.files);
+
+        const uploaded = [...data.photos];
+        chosenFiles.forEach(file => {
+            if (!uploaded.some(f => f.name === file.name)) {
+                uploaded.push(file);
+            }
+        });
+        setData('photos', uploaded);
+    }
 
     const formCategoriesGroup = categories?.map(el => {
         return (<Form.Check
@@ -36,39 +45,44 @@ export default function CreateLot() {
         />);
     });
 
-    function handleChange(e) {
-        const key = e.target.id;
-        const value = e.target.value;
-        setValues({ ...values, [key]: value });
-    };
-
     function handleSubmit(e) {
         e.preventDefault();
-        router.post('/user-lots', values);
+        post('/user-lots', {
+            forceFormData: true
+        });
     };
 
     return (
         <MenuLayout>
+
             <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="lotName" className="mb-3">
-                    <Form.Label>Назва лоту</Form.Label>
-                    <Form.Control type="text" value={values.lotName} onChange={handleChange} />
+                    <Form.Label>Назва лоту {errors.lotName}</Form.Label>
+                    <Form.Control type="text" value={data.lotName} onChange={e => setData('lotName', e.target.value)} />
                 </Form.Group>
                 <Form.Group controlId="lotDesc" className="mb-3">
-                    <Form.Label>Опис лоту</Form.Label>
-                    <Form.Control as="textarea" rows={3} value={values.lotDesc} onChange={handleChange} />
+                    <Form.Label>Опис лоту {errors.lotDesc}</Form.Label>
+                    <Form.Control as="textarea" rows={3} value={data.lotDesc} onChange={e => setData('lotDesc', e.target.value)} />
                 </Form.Group>
                 <Form.Group controlId="photos" className="mb-3">
-                    <Form.Label>Фото лоту</Form.Label>
-                    <Form.Control type="file" multiple />
+                    <Form.Label>Фото лоту {errors.photos}</Form.Label>
+                    <Form.Control type="file" onChange={e =>setData('photos', e.target.files[0])} />
+                </Form.Group>
+                <Form.Group controlId="photosPreviews" className="mb-3">
+                    <Form.Label>Завантажені фото </Form.Label>
+                    {/* {data.photos.map(file => (
+                        <div>
+                            {file.name}
+                        </div>
+                    ))} */}
                 </Form.Group>
                 <Form.Group controlId="tradeEndTime">
-                    <Form.Label>Дата та час завершення торгів</Form.Label>
-                    <Form.Control type="datetime-local" value={values.tradeEndTime} onChange={handleChange} />
+                    <Form.Label>Дата та час завершення торгів {errors.tradeEndTime}</Form.Label>
+                    <Form.Control type="datetime-local" value={data.tradeEndTime} onChange={e => setData('tradeEndTime', e.target.value)} />
                 </Form.Group>
                 <Form.Group controlId="startBid" className="mb-3">
-                    <Form.Label>Початкова ставка</Form.Label>
-                    <Form.Control type="text" value={values.startBid} onChange={handleChange} />
+                    <Form.Label>Початкова ставка {errors.startBid} </Form.Label>
+                    <Form.Control type="text" value={data.startBid} onChange={e => setData('startBid', e.target.value)} />
                 </Form.Group>
                 <Form.Group controlId="categories">
                     <Form.Label>Оберіть категорії для лоту:</Form.Label>

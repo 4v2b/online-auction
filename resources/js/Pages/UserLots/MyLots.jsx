@@ -8,9 +8,7 @@ import MenuLayout from "@/Layouts/MenuLayout";
 
 export default function MyLots({ lots }) {
 
-    const panels = lots?.map(el => {
-        return (<LotPanel lot={el} />);
-    });
+    const panels = lots?.map(el => <LotPanel lot={el} />);
 
     return (
         <MenuLayout>

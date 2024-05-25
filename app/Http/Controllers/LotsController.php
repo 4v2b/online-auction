@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreLotRequest;
 use App\Models\Category;
 use App\Models\CategoryLot;
 use App\Models\Lot;
 use App\Models\Photo;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class LotsManagementController extends Controller
+class LotsController extends Controller
 {
     function show($lotId)
     {
@@ -20,9 +22,10 @@ class LotsManagementController extends Controller
 
     function showAll()
     {
-        //dd('controller is hit');
         $userId = Auth::id();
-        $userLots = Lot::where('id', $userId)->get();
+        $userLots = Lot::where('user_id', $userId)->get();
+                //dd('controller is hit');
+
         return Inertia::render('UserLots/MyLots', ['lots' => $userLots]);
     }
 
@@ -36,10 +39,11 @@ class LotsManagementController extends Controller
     {
     }
 
-    function destroy(Request $q)
+    function destroy(Lot $lot)
     {
-        //Lot::destroy("");
-        redirect('/user-lots');
+        $deleted = $lot->delete();
+        //dd($deleted);
+        return redirect('/user-lots');
     }
 
     function create()
@@ -47,26 +51,29 @@ class LotsManagementController extends Controller
         return Inertia::render('UserLots/CreateLot');
     }
 
-    function store(Request $q)
+    function store(StoreLotRequest $q)
     {
-        //todo validation
+        $validated = $q->validated();
 
         $lot = Lot::create(
             [
-                'title' => $q->lotName,
-                'description' => $q->lotDesc,
-                'start_price' => (float) $q->startBid,
+                'title' => $validated['lotName'],
+                'description' => $validated['lotDesc'],
+                'start_price' => (float) $validated['startBid'],
                 'user_id' => Auth::id(),
-                'ends_at' => $q->tradeEndTime
+                'ends_at' => $validated['tradeEndTime']
             ]
         );
 
-        foreach ($q->photos as $file) {
-            $path = $file->store('uploads');
-            Photo::create(['path' => $path, 'lot_id' => $lot->id]);
-        }
+        $path = $validated['photos']->store('uploads');
+        Photo::create(['path' => $path, 'lot_id' => $lot->id]);
 
-        foreach ($q->selectedCategories as $category) {
+        // foreach ($validated['photos'] as $file) {
+        //     $path = $file->store('uploads');
+        //     Photo::create(['path' => $path, 'lot_id' => $lot->id]);
+        // }
+
+        foreach ($validated['selectedCategories'] as $category) {
             CategoryLot::create(['lot_id' => $lot->id, 'category_id' => $category]);
         }
         return redirect(route('lot.all'));

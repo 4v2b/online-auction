@@ -1,21 +1,29 @@
 import MainLayout from '@/Layouts/MainLayout';
-import { router } from '@inertiajs/react';
-import { useState } from 'react';
+import { useForm } from '@inertiajs/react';
 import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
 
 export { Row } from 'react-bootstrap';
 
 export default function EditLot({ lot, photos }) {
-    const [values, setValues] = useState({
-        lotName: lot.name,
-        lotDesc: lot.description,
-        photos: photos,
-    });
+    const {data, setData, post, errors} = useForm(
+        {
+            lotName: lot.name,
+            lotDesc: lot.description,
+            photos: photos,
+            deletedPhotos: [],
+            newPhotos: [],
+            _method: 'put'
+        }
+    )    
     const [deletedPhotos, setDeletedPhotos] = useState([]);
     const [newPhotos, setNewPhotos] = useState([]);
 
     function handleDelete() {
-        router.post('lot.destroy');
+        router.delete(`/lots/${lot.id}`);
+    }
+
+    function handleSubmit(){
+
     }
 
     return (
@@ -39,6 +47,7 @@ export default function EditLot({ lot, photos }) {
                             onChange={handleFileChange}
                         />
                     </Form.Group>
+                    <Button type='submit'>Зберегти зміни</Button>
                 </Form>
 
                 <Button onClick={handleDelete}>Видалити</Button>
