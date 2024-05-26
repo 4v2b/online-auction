@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BidsController;
 use App\Http\Controllers\LotsController;
+use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserInfoController;
 use App\Models\Contact;
@@ -27,9 +28,9 @@ Route::get('/', function () {
     return Inertia::render('Home');
 })->name('home');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return Inertia::render('Dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -37,8 +38,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/catalog', function () {
-});
+
+
+Route::controller([CatalogController::class])->group(function () {
+        Route::get('/catalog', 'getAll');
+    });
 
 Route::get('/lots/{lot}', function (Lot $lot) {
     return Inertia::render('LotPage', [
@@ -63,7 +67,7 @@ Route::delete('/wishlist', function () {
 
 Route::middleware('auth')->controller(LotsController::class)->group(function () {
     Route::get('/user-lots', 'showAll')->name('lot.all');
-    Route::get('/lots/{id}/edit', 'edit')->name('lot.edit');
+    Route::get('/lots/{lot}/edit', 'edit')->name('lot.edit');
     Route::put('/user-lots', 'update')->name('lot.update');
     Route::delete('/lots/{lot}', 'destroy')->name('lot.destroy');
     Route::get('/user-lots/create', 'create')->name('lot.create');
@@ -76,27 +80,10 @@ Route::middleware('auth')->controller(BidsController::class)->group(function () 
     Route::delete('/bids/{bid}', 'destroy');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->controller(UserInfoController::class)->group(function () {
 
-    Route::get('/userinfo', function () {
-        $user_id = Auth::id();
-
-        $person = Person::select('profile_picture', 'name')->where('user_id',$user_id);
-        $contacts = Contact::select('value', 'contact_type_id', 'id')->where('person_id', $user_id)->get();
-        $contactTypes = ContactType::all();
-
-        return Inertia::render(
-            'UserInfo',
-            [
-                'person' => $person,
-                'contacts' => $contacts,
-                'contactTypes' => $contactTypes
-            ]
-        );
-    })->name('userinfo');
-
-    Route::post('/userinfo', function (Request $q) {
-    });
+    Route::get('/userinfo', 'edit')->name('userinfo');
+    Route::post('/userinfo', 'update');
 });
 
 require __DIR__ . '/auth.php';

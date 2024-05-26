@@ -11,6 +11,8 @@ class Person extends Model
 
     protected $table = 'people';
 
+    protected $primaryKey = 'user_id';
+
     public $timestamps = false;
 
     /**

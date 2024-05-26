@@ -1,116 +1,149 @@
-import { router } from "@inertiajs/react";
-import { useState } from "react";
-import { Form, Button, Row, Col } from "react-bootstrap";
-import Contacts from "@/Components/ContactsForm";
+import { router, useForm } from "@inertiajs/react";
+import { useState, useEffect } from "react";
+import { Form, Button, Row, Col, Card, Container } from "react-bootstrap";
 import MenuLayout from "@/Layouts/MenuLayout";
 
-export default function UserInfo({ person, contacts, contactTypes }) {
-    const [values, setValues] = useState({
-        name: person.name,
-        avatar: person.profile_picture,
-        contacts: contacts,
+export default function UserInfo({ name, avatar, contacts, contactTypes }) {
+    const { data, setData, post, errors } = useForm({
+        name: name,
+        avatar: null,
+        contacts: contacts
     });
+    const [preview, setPreview] = useState(avatar || undefined);
 
-    function handleChange(e) {
-        const key = e.target.id;
-        const value = e.target.value;
-        setValues({ ...values, [key]: value });
-    };
+    useEffect(() => {
+        if (!data.avatar && !avatar) {
+            setPreview(undefined);
+            return;
+        }
+        if (!data.avatar) {
+            return;
+        }
+        const objectUrl = URL.createObjectURL(data.avatar);
+        setPreview(objectUrl);
+
+        return () => URL.revokeObjectURL(objectUrl);
+    }, [data.avatar]);
 
     const handleFileChange = (e) => {
-        setValues({
-            ...values,
-            avatar: e.target.files[0],
-        });
+        setData('avatar', e.target.files[0]);
     };
 
     const handleContactChange = (id, field, value) => {
-        setValues({
-            ...values,
-            contacts: values.contacts.map(contact =>
-                contact.id === id ? { ...contact, [field]: value } : contact
-            ),
-        });
+        setData('contacts', data.contacts.map(contact =>
+            contact.id === id ? { ...contact, [field]: value } : contact));
     };
 
     const addContact = () => {
-        setValues({
-            ...values,
-            contacts: [...values.contacts, { id: `${-1*Date.now()}`, value: '', contact_type_id: contactTypes[0].id }],
-        });
+        setData('contacts',
+            [
+                ...data.contacts,
+                {
+                    id: `${-1 * Date.now()}`,
+                    value: '',
+                    contact_type_id: contactTypes[0].id
+                }
+            ]
+        );
     };
 
     const removeContact = (id) => {
-        setValues({
-            ...values,
-            contacts: values.contacts.filter(contact => contact.id !== id),
-        });
+        setData('contacts', data.contacts.filter(contact => contact.id !== id));
     };
 
-    function handleSubmit(e){
+    function handleSubmit(e) {
         e.preventDefault();
-        router.post('/userinfo', values);
+        post('/userinfo');
     }
 
     return (
         <MenuLayout>
-            <h2>Контактні дані</h2>
-            <Form onSubmit={handleSubmit}>
-                <Form.Group controlId="name">
-                    <Form.Label>
-                        Ім'я користувача
-                    </Form.Label>
-                    <Form.Control onChange={handleChange} type="text">{values.name}</Form.Control>
-                </Form.Group>
+            <Container>
+                <h2 className="my-4">Контактні дані</h2>
+                <Form onSubmit={handleSubmit}>
+                    <Row>
+                        <Col md={8}>
+                            <Card className="mb-4">
+                                <Card.Body>
+                                    <Form.Group controlId="name">
+                                        <Form.Label>Ім'я користувача</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            value={data.name}
+                                            onChange={e => setData('name', e.target.value)}
+                                            isInvalid={!!errors.name}
+                                        />
+                                        {errors.name && <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>}
+                                    </Form.Group>
+                                </Card.Body>
+                            </Card>
 
-                <Form.Group controlId="avatar">
-                    <Form.Label>Аватар</Form.Label>
-                    <Form.Control
-                        type="file"
-                        name="avatar"
-                        onChange={handleFileChange}
-                    />
-                </Form.Group>
-
-                {values.contacts.map((contact, index) => (
-                    <Row key={contact.id} className="mb-3">
-                        <Col md={5}>
-                            <Form.Group controlId={`contact-value-${contact.id}`}>
-                                <Form.Label>Контакт</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    value={contact.value}
-                                    onChange={(e) => handleContactChange(contact.id, 'value', e.target.value)}
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={5}>
-                            <Form.Group controlId={`contact-type-${contact.id}`}>
-                                <Form.Label>Тип контакту</Form.Label>
-                                <Form.Control
-                                    as="select"
-                                    value={contact.contact_type_id}
-                                    onChange={(e) => handleContactChange(contact.id, 'contact_type_id', e.target.value)}
-                                >
-                                    {contactTypes.map(type => (
-                                        <option key={type.id} value={type.id}>
-                                            {type.name}
-                                        </option>
+                            <Card className="mb-4">
+                                <Card.Body>
+                                    <Form.Label>Контакти</Form.Label>
+                                    {data.contacts.map((contact, index) => (
+                                        <Row key={contact.id} className="mb-3">
+                                            <Col md={5}>
+                                                <Form.Group controlId={`contact-value-${contact.id}`}>
+                                                    <Form.Label>Контакт</Form.Label>
+                                                    <Form.Control
+                                                        type="text"
+                                                        value={contact.value}
+                                                        onChange={(e) => handleContactChange(contact.id, 'value', e.target.value)}
+                                                        isInvalid={!!errors[`contacts.${index}.value`]}
+                                                    />
+                                                    {errors[`contacts.${index}.value`] && <Form.Control.Feedback type="invalid">{errors[`contacts.${index}.value`]}</Form.Control.Feedback>}
+                                                </Form.Group>
+                                            </Col>
+                                            <Col md={5}>
+                                                <Form.Group controlId={`contact-type-${contact.id}`}>
+                                                    <Form.Label>Тип контакту</Form.Label>
+                                                    <Form.Control
+                                                        as="select"
+                                                        value={contact.contact_type_id}
+                                                        onChange={(e) => handleContactChange(contact.id, 'contact_type_id', e.target.value)}
+                                                        isInvalid={!!errors[`contacts.${index}.contact_type_id`]}
+                                                    >
+                                                        {contactTypes.map(type => (
+                                                            <option key={type.id} value={type.id}>
+                                                                {type.name}
+                                                            </option>
+                                                        ))}
+                                                    </Form.Control>
+                                                    {errors[`contacts.${index}.contact_type_id`] && <Form.Control.Feedback type="invalid">{errors[`contacts.${index}.contact_type_id`]}</Form.Control.Feedback>}
+                                                </Form.Group>
+                                            </Col>
+                                            <Col md={2} className="d-flex align-items-end">
+                                                <Button variant="danger" onClick={() => removeContact(contact.id)}>Видалити</Button>
+                                            </Col>
+                                        </Row>
                                     ))}
-                                </Form.Control>
-                            </Form.Group>
+
+                                    <Button variant="primary" onClick={addContact}>Додати контакт</Button>
+                                </Card.Body>
+                            </Card>
                         </Col>
-                        <Col md={2} className="d-flex align-items-end">
-                            <Button variant="danger" onClick={() => removeContact(contact.id)}>Видалити</Button>
+                        <Col md={4}>
+                            <Card>
+                                <Card.Img width={200} variant="top" src={preview} alt="profile picture" />
+                                <Card.Body>
+                                    <Form.Group controlId="avatar">                                        
+                                        <Form.Label>Фото профілю</Form.Label>
+                                        <Form.Control
+                                            type="file"
+                                            name="avatar"
+                                            onChange={handleFileChange}
+                                            isInvalid={!!errors.avatar}
+                                        />
+                                        {errors.avatar && <Form.Control.Feedback type="invalid">{errors.avatar}</Form.Control.Feedback>}
+                                    </Form.Group>
+                                </Card.Body>
+                            </Card>
                         </Col>
                     </Row>
-                ))}
-                
-                <Button variant="primary" onClick={addContact}>Додати контакт</Button>
-                <Button variant="danger" type='submit'>
-                    Зберегти зміни
-                </Button>
-            </Form>
+                    <Button className="mt-4" variant="success" type="submit">Зберегти зміни</Button>
+                </Form>
+            </Container>
         </MenuLayout>
     );
 }

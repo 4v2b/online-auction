@@ -1,18 +1,45 @@
 import { Form, Button } from "react-bootstrap";
 import MenuLayout from "@/Layouts/MenuLayout";
 import { useForm, usePage } from '@inertiajs/react';
+import PhotoUpload from '@/Components/PhotoUpload';
+import {useState, useEffect} from 'react';
 
 export default function CreateLot() {
     const { data, setData, post, errors } = useForm({
         lotName: "",
         lotDesc: "",
-        photos: null,
+        photos: [],
         startBid: "",
         selectedCategories: [],
         tradeEndTime: '',
         _method: 'post'
     });
     const { categories } = usePage().props;
+    const [previews, setPreviews] = useState([]);
+
+    useEffect(() => {
+        if (data.photos.length < 1) {
+            setPreviews([]);
+            return;
+        }
+
+        const objectUrls = data?.photos.map(file => URL.createObjectURL(file));
+        setPreviews(objectUrls);
+
+        return () => objectUrls.forEach(objectUrl => URL.revokeObjectURL(objectUrl));
+    }, [data.photos]);
+
+    function handleSelectFile(e) {
+        if (e.target.files && e.target.files.length > 0) {
+            setData('photos', [...data.photos, e.target.files[0]]);
+        }
+    }
+
+    function handlePhotoRemove(deleteIndex) {
+        const keptFiles = data.photos.filter((file, index) => index !== deleteIndex);
+        setData('photos', keptFiles);
+    }
+
 
     const handleCategoryChange = (e) => {
         const { value, checked } = e.target;
@@ -22,18 +49,6 @@ export default function CreateLot() {
             setData('selectedCategories', data.selectedCategories.filter(cat => cat !== value));
         }
     };
-
-    function handlePhotoUpload(e) {
-        const chosenFiles = Array.prototype.slice(e.target.files);
-
-        const uploaded = [...data.photos];
-        chosenFiles.forEach(file => {
-            if (!uploaded.some(f => f.name === file.name)) {
-                uploaded.push(file);
-            }
-        });
-        setData('photos', uploaded);
-    }
 
     const formCategoriesGroup = categories?.map(el => {
         return (<Form.Check
@@ -66,16 +81,14 @@ export default function CreateLot() {
                 </Form.Group>
                 <Form.Group controlId="photos" className="mb-3">
                     <Form.Label>Фото лоту {errors.photos}</Form.Label>
-                    <Form.Control type="file" onChange={e =>setData('photos', e.target.files[0])} />
+                    {/* <Form.Control type="file" onChange={e => setData('photos', e.target.files[0])} /> */}
+                    <PhotoUpload
+                        previews={previews}
+                        onRemove={handlePhotoRemove}
+                        onSelectFile={handleSelectFile}
+                    ></PhotoUpload>
                 </Form.Group>
-                <Form.Group controlId="photosPreviews" className="mb-3">
-                    <Form.Label>Завантажені фото </Form.Label>
-                    {/* {data.photos.map(file => (
-                        <div>
-                            {file.name}
-                        </div>
-                    ))} */}
-                </Form.Group>
+
                 <Form.Group controlId="tradeEndTime">
                     <Form.Label>Дата та час завершення торгів {errors.tradeEndTime}</Form.Label>
                     <Form.Control type="datetime-local" value={data.tradeEndTime} onChange={e => setData('tradeEndTime', e.target.value)} />
@@ -92,6 +105,7 @@ export default function CreateLot() {
                     Опублікувати
                 </Button>
             </Form>
+            {/* <PhotoUpload></PhotoUpload> */}
         </MenuLayout>
     );
 }

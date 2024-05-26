@@ -30,7 +30,7 @@ export default function LotPanel({ lot }) {
                     </span>
 
                     <DropdownButton variant="light" title={<ThreeDots />}>
-                        <Dropdown.Item href={`/lots/{${lot.id}}/edit`}>
+                        <Dropdown.Item href={`/lots/${lot.id}/edit`}>
                             Редагувати
                         </Dropdown.Item>
                         <Dropdown.Item onClick={handleDelete}>

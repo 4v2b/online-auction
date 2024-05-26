@@ -1,7 +1,7 @@
 import { Card, Button } from "react-bootstrap";
 import { Heart, HeartFill } from "react-bootstrap-icons"
 
-export default function LotCard({ id, title, currentBid, photoBlob, auth }) {
+export default function LotCard({ id, title, currentBid, preview}) {
   const [isHovered, setIsHovered] = useState(false);
 
   const currentBidLabel = 'Поточна ставка: ' + currentBid;
@@ -17,7 +17,7 @@ export default function LotCard({ id, title, currentBid, photoBlob, auth }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Card.Img variant="top" src={URL.createObjectURL(photoBlob)} />
+      <Card.Img variant="top" src={preview} />
       <Card.Body>
         <Card.Title>{title}</Card.Title>
         <Card.Subtitle>

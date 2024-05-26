@@ -10,7 +10,9 @@ use App\Models\Photo;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Database\Eloquent\Model;
+use Nette\Utils\Image;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class LotsController extends Controller
 {
@@ -24,15 +26,21 @@ class LotsController extends Controller
     {
         $userId = Auth::id();
         $userLots = Lot::where('user_id', $userId)->get();
-                //dd('controller is hit');
+        //dd('controller is hit');
 
         return Inertia::render('UserLots/MyLots', ['lots' => $userLots]);
     }
 
-    function edit($lotId)
+    function edit(Lot $lot)
     {
-        $lot = Lot::where($lotId)->get();
-        return Inertia::render('UserLots/EditLot', ['lot' => $lot]);
+        $photos = Photo::where('lot_id', $lot->id)->get();
+
+        $storedPhotos = [];
+
+        foreach ($photos as $photo) {
+            $storedPhotos[] = Storage::url($photo->path);
+        }
+        return Inertia::render('UserLots/EditLot', ['lot' => $lot, 'photos' => $storedPhotos]);
     }
 
     function update()
@@ -65,13 +73,11 @@ class LotsController extends Controller
             ]
         );
 
-        $path = $validated['photos']->store('uploads');
-        Photo::create(['path' => $path, 'lot_id' => $lot->id]);
 
-        // foreach ($validated['photos'] as $file) {
-        //     $path = $file->store('uploads');
-        //     Photo::create(['path' => $path, 'lot_id' => $lot->id]);
-        // }
+        foreach ($validated['photos'] as $file) {
+            $path = $file->store('uploads/' . $q->user()->id, 'public');
+            Photo::create(['path' => $path, 'lot_id' => $lot->id]);
+        }
 
         foreach ($validated['selectedCategories'] as $category) {
             CategoryLot::create(['lot_id' => $lot->id, 'category_id' => $category]);
