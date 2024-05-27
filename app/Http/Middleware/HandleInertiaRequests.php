@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
 
 //todo lazy user loading
 

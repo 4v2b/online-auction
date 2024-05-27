@@ -1,27 +1,32 @@
 import { Form, FormControl, Button, DropdownButton, Dropdown } from 'react-bootstrap';
-import {Search} from 'react-bootstrap-icons'
+import {Search} from 'react-bootstrap-icons';
+import { router } from '@inertiajs/react';
 
 export default function SearchBar({ categories }) {
     const categoryList = categories.map((el) => (
-        <Dropdown.Item key={el.id} href={`/category/${el.id}`}>
+        <Dropdown.Item key={el.id} href={`/categories/${el.id}`}>
             {el.name}
         </Dropdown.Item>
     ));
 
-    function handleSubmit(){
-
+    function handleSubmit(event){
+        event.preventDefault();
+        const searchString = event.target.elements.search.value;
+        router.post('/catalog/search', {searchString: searchString});
     }
 
     return (
         <div className="d-flex align-items-center">
-            <Form className="d-flex me-3">
+            <Form onSubmit={handleSubmit} className="d-flex me-5">
                 <FormControl
                     type="search"
                     placeholder="Знайти"
-                    className="me-2"
+                    name='search'
+                    className="me-4"
                     aria-label="Search"
+                    maxLength={40}
                 />
-                <Button variant="outline-success" onClick={handleSubmit}>
+                <Button variant="outline-success" type='submit'>
                     <Search/>
                 </Button>
             </Form>

@@ -13,7 +13,7 @@ export default function MyLots({ lots }) {
     return (
         <MenuLayout>
             {panels}
-            <Button href={route('lot.create')}><PlusLg style={{display:"inline"}}/> Створити</Button>
+            <Button href='/lots/create'><PlusLg style={{display:"inline"}}/> Створити</Button>
         </MenuLayout>
     );
 

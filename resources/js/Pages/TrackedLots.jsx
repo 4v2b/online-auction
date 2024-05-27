@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { router } from '@inertiajs/react'
 import MenuLayout from '@/Layouts/MenuLayout';
+import TrackedLot from '@/Components/TrackedLotPanel';
 
 export default function TrackedLots({lots}){
     const [favoriteLots, setFavoriteLots] = useState(lots);

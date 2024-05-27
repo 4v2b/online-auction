@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreLotRequest;
+use App\Http\Requests\UpdateLotRequest;
 use App\Models\Category;
 use App\Models\CategoryLot;
 use App\Models\Lot;
 use App\Models\Photo;
+use App\Models\TrackedLot;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Database\Eloquent\Model;
@@ -38,19 +40,48 @@ class LotsController extends Controller
         $storedPhotos = [];
 
         foreach ($photos as $photo) {
-            $storedPhotos[] = Storage::url($photo->path);
+            $storedPhotos[] = [
+                'id' => $photo->id,
+                'url' => Storage::url($photo->path)
+            ];
         }
-        return Inertia::render('UserLots/EditLot', ['lot' => $lot, 'photos' => $storedPhotos]);
+
+        // dd($storedPhotos);
+        return Inertia::render('UserLots/EditLot', ['lot' => $lot, 'storedPhotos' => $storedPhotos]);
     }
 
-    function update()
+    function update(UpdateLotRequest $q, Lot $lot)
     {
+        $validated = $q->validated();
+
+        if ($lot->title != $validated['lotName']) {
+            $lot->title = $validated['lotName'];
+        }
+
+        if ($lot->description != $validated['lotDesc']) {
+            $lot->description = $validated['lotDesc'];
+        }
+        $lot->save();
+
+        if (!empty($validated['deletedStoredPhotos'])) {
+            foreach ($validated['deletedStoredPhotos'] as $photoId) {
+                $photo = Photo::find($photoId);
+                Storage::delete($photo->path);
+                $photo->delete();
+            }
+        }
+
+        foreach ($validated['photos'] as $photo) {
+            $path = $photo->store('/uploads' . $q->user()->id, 'public');
+            Photo::create(['path' => $path, 'lot_id' => $lot->id]);
+        }
+
+        return redirect('/lots');
     }
 
     function destroy(Lot $lot)
     {
         $deleted = $lot->delete();
-        //dd($deleted);
         return redirect('/user-lots');
     }
 
@@ -83,5 +114,32 @@ class LotsController extends Controller
             CategoryLot::create(['lot_id' => $lot->id, 'category_id' => $category]);
         }
         return redirect(route('lot.all'));
+    }
+
+    function track(Request $q, Lot $lot)
+    {
+        dd($q);
+
+        $validated = $q->validate([
+            'isTracked' => 'required|boolean'
+        ]);
+        //$isTracked = false;
+        if ($validated['isTracked'] == false) {
+            //$trackedLot = true;
+            TrackedLot::create(['lot_id' => $lot->id, 'user_id' => Auth::id()]);
+                dd($validated['isTracked']);
+
+        } else {
+            $trackedLot = TrackedLot::where('lot_id', $lot->id)->where('user_id', Auth::id())->first();
+            $deleted = $trackedLot->delete();
+            
+        }
+
+
+        return response()->json(
+            [
+                'isTracked' => !$validated['isTracked']
+            ]
+        );
     }
 }

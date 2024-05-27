@@ -14,6 +14,9 @@ class Bid extends Model
      *
      * @var array<int, string>
      */
+
+    public $timestamps = false;
+
     protected $fillable = [
         'value',
         'user_id',
