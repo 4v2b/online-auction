@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Nette\Utils\Image;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Bid;
 
 class LotsController extends Controller
 {
@@ -22,6 +23,29 @@ class LotsController extends Controller
     {
         $lot = Lot::where($lotId)->get();
         return Inertia::render('UserLots/LotDetails', ['lot' => $lot]);
+    }
+
+    function getTracked()
+    {
+        $lots_ids = TrackedLot::select('lot_id')->where('user_id', Auth::id())->get();
+
+        $fullLots = [];
+
+        $lots = Lot::whereIn('id', $lots_ids)->get();
+        foreach ($lots as $lot) {
+            $path = Photo::where('lot_id', $lot->id)->first()->path;
+            $url = Storage::url($path);
+            $maxbid = Bid::where('lot_id', $lot->id)->max('value');
+            $fullLots[] = [
+                'id' => $lot->id,
+                'bid' => $maxbid,
+                'price' => $lot->start_price,
+                'photo' => $url,
+                'title' => $lot->title,
+                'ends_at' => $lot->ends_at
+            ];
+        }
+        return Inertia::render('TrackedLots', ['lots' => $fullLots]);
     }
 
     function showAll()
@@ -85,6 +109,14 @@ class LotsController extends Controller
         return redirect('/user-lots');
     }
 
+    function destroyTracked($id)
+    {
+        $trackedLot = TrackedLot::where('lot_id', $id)->where('user_id', Auth::id())->first();
+        $deleted = $trackedLot->delete();
+        return redirect()->back();
+    }
+
+
     function create()
     {
         return Inertia::render('UserLots/CreateLot');
@@ -116,30 +148,17 @@ class LotsController extends Controller
         return redirect(route('lot.all'));
     }
 
-    function track(Request $q, Lot $lot)
+    function track(Request $q)
     {
-        dd($q);
-
         $validated = $q->validate([
-            'isTracked' => 'required|boolean'
+            'id' => 'required|numeric'
         ]);
-        //$isTracked = false;
-        if ($validated['isTracked'] == false) {
-            //$trackedLot = true;
-            TrackedLot::create(['lot_id' => $lot->id, 'user_id' => Auth::id()]);
-                dd($validated['isTracked']);
-
+        $trackedLot = TrackedLot::where('lot_id', $validated['id'])->where('user_id', Auth::id())->first();
+        if (is_null($trackedLot)) {
+            TrackedLot::create(['lot_id' => $validated['id'], 'user_id' => Auth::id()]);
         } else {
-            $trackedLot = TrackedLot::where('lot_id', $lot->id)->where('user_id', Auth::id())->first();
             $deleted = $trackedLot->delete();
-            
         }
-
-
-        return response()->json(
-            [
-                'isTracked' => !$validated['isTracked']
-            ]
-        );
+        return redirect()->back();
     }
 }

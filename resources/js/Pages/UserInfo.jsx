@@ -1,7 +1,8 @@
 import { router, useForm } from "@inertiajs/react";
 import { useState, useEffect } from "react";
-import { Form, Button, Row, Col, Card, Container } from "react-bootstrap";
+import { Form, Button, Row, Col, Card, Container, FloatingLabel } from "react-bootstrap";
 import MenuLayout from "@/Layouts/MenuLayout";
+import { Head } from '@inertiajs/react';
 
 export default function UserInfo({ name, avatar, contacts, contactTypes }) {
     const { data, setData, post, errors } = useForm({
@@ -58,12 +59,13 @@ export default function UserInfo({ name, avatar, contacts, contactTypes }) {
 
     return (
         <MenuLayout>
+            <Head title="Контактні дані" />
             <Container>
                 <h2 className="my-4">Контактні дані</h2>
                 <Form onSubmit={handleSubmit}>
                     <Row>
                         <Col md={8}>
-                            <Card className="mb-4">
+                            <Card className="mb-5">
                                 <Card.Body>
                                     <Form.Group controlId="name">
                                         <Form.Label>Ім'я користувача</Form.Label>
@@ -83,33 +85,38 @@ export default function UserInfo({ name, avatar, contacts, contactTypes }) {
                                     <Form.Label>Контакти</Form.Label>
                                     {data.contacts.map((contact, index) => (
                                         <Row key={contact.id} className="mb-3">
-                                            <Col md={5}>
+                                            <Col md={4}>
                                                 <Form.Group controlId={`contact-value-${contact.id}`}>
-                                                    <Form.Label>Контакт</Form.Label>
-                                                    <Form.Control
-                                                        type="text"
-                                                        value={contact.value}
-                                                        onChange={(e) => handleContactChange(contact.id, 'value', e.target.value)}
-                                                        isInvalid={!!errors[`contacts.${index}.value`]}
-                                                    />
+                                                    <FloatingLabel
+                                                        label="Значення">
+                                                        <Form.Control
+                                                            type="text"
+                                                            value={contact.value}
+                                                            onChange={(e) => handleContactChange(contact.id, 'value', e.target.value)}
+                                                            isInvalid={!!errors[`contacts.${index}.value`]}
+                                                        />
+
+                                                    </FloatingLabel>
                                                     {errors[`contacts.${index}.value`] && <Form.Control.Feedback type="invalid">{errors[`contacts.${index}.value`]}</Form.Control.Feedback>}
                                                 </Form.Group>
                                             </Col>
-                                            <Col md={5}>
+                                            <Col md={4}>
                                                 <Form.Group controlId={`contact-type-${contact.id}`}>
-                                                    <Form.Label>Тип контакту</Form.Label>
-                                                    <Form.Control
-                                                        as="select"
-                                                        value={contact.contact_type_id}
-                                                        onChange={(e) => handleContactChange(contact.id, 'contact_type_id', e.target.value)}
-                                                        isInvalid={!!errors[`contacts.${index}.contact_type_id`]}
-                                                    >
-                                                        {contactTypes.map(type => (
-                                                            <option key={type.id} value={type.id}>
-                                                                {type.name}
-                                                            </option>
-                                                        ))}
-                                                    </Form.Control>
+                                                    <FloatingLabel
+                                                        label="Тип контакту">
+
+                                                        <Form.Control
+                                                            as="select"
+                                                            value={contact.contact_type_id}
+                                                            onChange={(e) => handleContactChange(contact.id, 'contact_type_id', e.target.value)}
+                                                            isInvalid={!!errors[`contacts.${index}.contact_type_id`]}
+                                                        >
+                                                            {contactTypes.map(type => (
+                                                                <option key={type.id} value={type.id}>
+                                                                    {type.name}
+                                                                </option>
+                                                            ))}
+                                                        </Form.Control></FloatingLabel>
                                                     {errors[`contacts.${index}.contact_type_id`] && <Form.Control.Feedback type="invalid">{errors[`contacts.${index}.contact_type_id`]}</Form.Control.Feedback>}
                                                 </Form.Group>
                                             </Col>
@@ -118,16 +125,17 @@ export default function UserInfo({ name, avatar, contacts, contactTypes }) {
                                             </Col>
                                         </Row>
                                     ))}
-
+                                    <br />
                                     <Button variant="primary" onClick={addContact}>Додати контакт</Button>
+
                                 </Card.Body>
                             </Card>
                         </Col>
                         <Col md={4}>
                             <Card>
-                                <Card.Img width={200} variant="top" src={preview} alt="profile picture" />
+                                <Card.Img width={100} variant="top" src={preview} alt="profile picture" />
                                 <Card.Body>
-                                    <Form.Group controlId="avatar">                                        
+                                    <Form.Group controlId="avatar">
                                         <Form.Label>Фото профілю</Form.Label>
                                         <Form.Control
                                             type="file"

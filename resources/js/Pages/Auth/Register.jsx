@@ -1,10 +1,7 @@
 import { useEffect } from 'react';
-import GuestLayout from '@/Layouts/GuestLayout';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
+import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
 import { Head, Link, useForm } from '@inertiajs/react';
+import GuestLayout from '@/Layouts/GuestLayout';
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -22,96 +19,96 @@ export default function Register() {
 
     const submit = (e) => {
         e.preventDefault();
-
         post(route('register'));
     };
 
     return (
-        <GuestLayout>
-            <Head title="Register" />
+        <Container fluid className="d-flex align-items-center justify-content-center min-vh-100">
+            <Head title="Реєстрація" />
 
-            <form onSubmit={submit}>
-                <div>
-                    <InputLabel htmlFor="name" value="Name" />
+            <Row className="justify-content-center w-100">
+                <Col md={6} lg={4}>
+                    <Form onSubmit={submit}>
+                        <Form.Group controlId="name" className="mb-3">
+                            <Form.Label>Ім'я</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="name"
+                                value={data.name}
+                                onChange={(e) => setData('name', e.target.value)}
+                                isInvalid={!!errors.name}
+                                autoFocus
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.name}
+                            </Form.Control.Feedback>
+                        </Form.Group>
 
-                    <TextInput
-                        id="name"
-                        name="name"
-                        value={data.name}
-                        className="mt-1 block w-full"
-                        autoComplete="name"
-                        isFocused={true}
-                        onChange={(e) => setData('name', e.target.value)}
-                        required
-                    />
+                        <Form.Group controlId="email" className="mb-3">
+                            <Form.Label>Ел. пошта</Form.Label>
+                            <Form.Control
+                                type="email"
+                                name="email"
+                                value={data.email}
+                                onChange={(e) => setData('email', e.target.value)}
+                                isInvalid={!!errors.email}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.email}
+                            </Form.Control.Feedback>
+                        </Form.Group>
 
-                    <InputError message={errors.name} className="mt-2" />
-                </div>
+                        <Form.Group controlId="password" className="mb-3">
+                            <Form.Label>Пароль</Form.Label>
+                            <Form.Control
+                                type="password"
+                                name="password"
+                                value={data.password}
+                                onChange={(e) => setData('password', e.target.value)}
+                                isInvalid={!!errors.password}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.password}
+                            </Form.Control.Feedback>
+                        </Form.Group>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="email" value="Email" />
+                        <Form.Group controlId="password_confirmation" className="mb-3">
+                            <Form.Label>Повторіть пароль</Form.Label>
+                            <Form.Control
+                                type="password"
+                                name="password_confirmation"
+                                value={data.password_confirmation}
+                                onChange={(e) => setData('password_confirmation', e.target.value)}
+                                isInvalid={!!errors.password_confirmation}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.password_confirmation}
+                            </Form.Control.Feedback>
+                        </Form.Group>
 
-                    <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        onChange={(e) => setData('email', e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.email} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) => setData('password', e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="password_confirmation" value="Confirm Password" />
-
-                    <TextInput
-                        id="password_confirmation"
-                        type="password"
-                        name="password_confirmation"
-                        value={data.password_confirmation}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) => setData('password_confirmation', e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.password_confirmation} className="mt-2" />
-                </div>
-
-                <div className="flex items-center justify-end mt-4">
-                    <Link
-                        href={route('login')}
-                        className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                        Already registered?
-                    </Link>
-
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Register
-                    </PrimaryButton>
-                </div>
-            </form>
-        </GuestLayout>
+                        <Row className="align-items-center mb-3">
+                            <Col>
+                                <Link
+                                    href={route('login')}
+                                    className="text-decoration-underline text-sm text-gray-600 hover:text-gray-900"
+                                >
+                                    Маєте обліковий запис?
+                                </Link>
+                            </Col>
+                            <Col className="text-end">
+                                <div className="d-flex justify-content-end">
+                                    <Button variant="danger" href='/' className="me-2">
+                                        Відмінити
+                                    </Button>
+                                    <Button variant="primary" type="submit" disabled={processing}>
+                                        Зареєструватися
+                                    </Button>
+                                </div>
+                            </Col>
+                        </Row>
+                    </Form>
+                </Col>
+            </Row>
+        </Container>
     );
 }

@@ -68,6 +68,8 @@ export default function LotPage({ lot, photos, bids, chosenCategories }) {
 
     return (
         <MainLayout>
+                        <Head title={lot.title} />
+
             <Container>
                 <Row>
                     <Col xs={12} md={8}>

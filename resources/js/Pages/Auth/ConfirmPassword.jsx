@@ -28,7 +28,7 @@ export default function ConfirmPassword() {
             <Head title="Confirm Password" />
 
             <div className="mb-4 text-sm text-gray-600">
-                This is a secure area of the application. Please confirm your password before continuing.
+               Введіть пароль щоб продовжити
             </div>
 
             <form onSubmit={submit}>
@@ -50,7 +50,7 @@ export default function ConfirmPassword() {
 
                 <div className="flex items-center justify-end mt-4">
                     <PrimaryButton className="ms-4" disabled={processing}>
-                        Confirm
+                        Підтвердити
                     </PrimaryButton>
                 </div>
             </form>

@@ -1,8 +1,9 @@
 import { Form, Button } from "react-bootstrap";
+import { Head } from "@inertiajs/react"
 import MenuLayout from "@/Layouts/MenuLayout";
 import { useForm, usePage } from '@inertiajs/react';
 import PhotoUpload from '@/Components/PhotoUpload';
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 
 export default function CreateLot() {
     const { data, setData, post, errors } = useForm({
@@ -69,7 +70,7 @@ export default function CreateLot() {
 
     return (
         <MenuLayout>
-
+            <Head title="Створити лот" />
             <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="lotName" className="mb-3">
                     <Form.Label>Назва лоту {errors.lotName}</Form.Label>

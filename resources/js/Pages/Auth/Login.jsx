@@ -1,11 +1,7 @@
 import { useEffect } from 'react';
-import Checkbox from '@/Components/Checkbox';
+import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -22,76 +18,81 @@ export default function Login({ status, canResetPassword }) {
 
     const submit = (e) => {
         e.preventDefault();
-
         post(route('login'));
     };
 
     return (
-        <GuestLayout>
+        <Container fluid className="d-flex align-items-center justify-content-center min-vh-100">
             <Head title="Log in" />
 
-            {status && <div className="mb-4 font-medium text-sm text-green-600">{status}</div>}
+            <Row className="justify-content-center w-100">
+                <Col md={6} lg={4}>
+                    {status && <Alert variant="success" className="mb-4">{status}</Alert>}
+                    <Form onSubmit={submit}>
+                        <Form.Group controlId="email" className="mb-3">
+                            <Form.Label>Ел. пошта</Form.Label>
+                            <Form.Control
+                                type="email"
+                                name="email"
+                                value={data.email}
+                                onChange={(e) => setData('email', e.target.value)}
+                                isInvalid={!!errors.email}
+                                autoFocus
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.email}
+                            </Form.Control.Feedback>
+                        </Form.Group>
 
-            <form onSubmit={submit}>
-                <div>
-                    <InputLabel htmlFor="email" value="Email" />
+                        <Form.Group controlId="password" className="mb-3">
+                            <Form.Label>Пароль</Form.Label>
+                            <Form.Control
+                                type="password"
+                                name="password"
+                                value={data.password}
+                                onChange={(e) => setData('password', e.target.value)}
+                                isInvalid={!!errors.password}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.password}
+                            </Form.Control.Feedback>
+                        </Form.Group>
 
-                    <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        isFocused={true}
-                        onChange={(e) => setData('email', e.target.value)}
-                    />
+                        <Form.Group controlId="remember" className="mb-3">
+                            <Form.Check
+                                type="checkbox"
+                                label="Запам'ятати мене"
+                                name="remember"
+                                checked={data.remember}
+                                onChange={(e) => setData('remember', e.target.checked)}
+                            />
+                        </Form.Group>
 
-                    <InputError message={errors.email} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="current-password"
-                        onChange={(e) => setData('password', e.target.value)}
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div className="block mt-4">
-                    <label className="flex items-center">
-                        <Checkbox
-                            name="remember"
-                            checked={data.remember}
-                            onChange={(e) => setData('remember', e.target.checked)}
-                        />
-                        <span className="ms-2 text-sm text-gray-600">Remember me</span>
-                    </label>
-                </div>
-
-                <div className="flex items-center justify-end mt-4">
-                    {canResetPassword && (
-                        <Link
-                            href={route('password.request')}
-                            className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            Forgot your password?
-                        </Link>
-                    )}
-
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Log in
-                    </PrimaryButton>
-                </div>
-            </form>
-        </GuestLayout>
+                        <Row className="justify-content-between align-items-center">
+                            <Col className="text-start">
+                                {canResetPassword && (
+                                    <Link
+                                        href={route('password.request')}
+                                        className="text-decoration-underline text-sm text-gray-600 hover:text-gray-900"
+                                    >
+                                        Забули пароль?
+                                    </Link>
+                                )}
+                            </Col>
+                            <Col className="text-end">
+                                    <div className="d-flex justify-content-end">
+                                        <Button variant="danger" href='/' className="me-2">
+                                            Відмінити
+                                        </Button>
+                                        <Button variant="primary" type="submit" disabled={processing}>
+                                            Ввійти
+                                        </Button>
+                                    </div>
+                                </Col>
+                        </Row>
+                    </Form>
+                </Col>
+            </Row>
+        </Container>
     );
 }

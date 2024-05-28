@@ -2,26 +2,21 @@ import React, { useState } from 'react';
 import { router } from '@inertiajs/react'
 import MenuLayout from '@/Layouts/MenuLayout';
 import TrackedLot from '@/Components/TrackedLotPanel';
+import {Head} from '@inertiajs/react';
 
-export default function TrackedLots({lots}){
-    const [favoriteLots, setFavoriteLots] = useState(lots);
+export default function TrackedLots({ lots }) {
 
-    const handleDelete = (id) => {
-      router.post('/wishlist/delete', { id }, {
-        onSuccess: () => {
-          setFavoriteLots(favoriteLots.filter(lot => lot.id !== id));
-        },
-        onError: (errors) => {
-          console.error(errors);
-        }
-      });
-    };
-  
-    return (
-      <MenuLayout>
-        {favoriteLots.map(lot => (
-          <TrackedLot key={lot.id} lot={lot} onDelete={handleDelete} />
-        ))}
-      </MenuLayout>
-    );
+  function handleDelete(id) {
+    router.delete(`/tracked/${id}`);
+  };
+
+  return (
+    <MenuLayout>
+      <Head title="Відстежувані лоти" />
+
+      {lots.map(lot => (
+        <TrackedLot key={lot.id} lot={lot} onDelete={() => handleDelete(lot.id)} />
+      ))}
+    </MenuLayout>
+  );
 }

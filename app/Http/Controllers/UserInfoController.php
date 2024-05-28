@@ -21,11 +21,17 @@ class UserInfoController extends Controller
         $contacts = Contact::select('value', 'contact_type_id', 'id')->where('person_id', $user_id)->get();
         $contactTypes = ContactType::all();
 
+        if (is_null($person->path_to_avatar)) {
+            $url = Storage::url('empty_avatar.jpg');
+        } else {
+            $url = Storage::url($person->path_to_avatar);
+        }
+
         return Inertia::render(
             'UserInfo',
             [
                 'name' => $person->name,
-                'avatar' => Storage::url($person->path_to_avatar),
+                'avatar' =>  $url,
                 'contacts' => $contacts,
                 'contactTypes' => $contactTypes
             ]
@@ -38,13 +44,14 @@ class UserInfoController extends Controller
 
         $id = $q->user()->id;
 
-        $person = Person::where('user_id',$id)->first();
+        $person = Person::where('user_id', $id)->first();
 
         if ($validated['name'] != $person->name) {
             $person->name = $validated['name'];
         }
         if (!is_null($validated['avatar'])) {
             $path = $validated['avatar']->store('avatars/' . $id, 'public');
+            Storage::delete($person->path_to_avatar);
             $person->path_to_avatar = $path;
         }
 

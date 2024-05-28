@@ -19,6 +19,9 @@ class TrackedLot extends Model
         'lot_id'
     ];
 
+    protected $primaryKey = 'added_at';
+
+
     public $timestamps = false;
 
 }

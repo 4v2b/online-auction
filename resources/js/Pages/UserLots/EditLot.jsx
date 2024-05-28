@@ -3,6 +3,8 @@ import PhotoUpload from '@/Components/PhotoUpload';
 import { router, useForm } from '@inertiajs/react';
 import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
 import { useState, useEffect } from "react";
+import {Head} from '@inertiajs/react';
+
 
 export default function EditLot({ lot, storedPhotos }) {
     const { data, setData, post, errors } = useForm(
@@ -32,8 +34,6 @@ export default function EditLot({ lot, storedPhotos }) {
         return () => objectUrls.forEach(objectUrl => URL.revokeObjectURL(objectUrl));
     }, [data.photos, storedPhotos, data.deletedStoredPhotos]);
 
-    console.log(errors);
-
     function handleSelectFile(e) {
         if (e.target.files && e.target.files.length > 0) {
             setData('photos', [...data.photos, e.target.files[0]]);
@@ -42,6 +42,10 @@ export default function EditLot({ lot, storedPhotos }) {
 
     function handlePhotoRemove(deleteIndex) {
 
+        if(previews.length == 1){
+            return;
+        }
+
         const url = previews.at(deleteIndex);
         const photo = storedPhotos.find((photo) => photo.url == url);
 
@@ -49,8 +53,6 @@ export default function EditLot({ lot, storedPhotos }) {
             setData('deletedStoredPhotos', [...data.deletedStoredPhotos, photo.id]);
             return;
         }
-
-        console.log(url);
 
         const filteredPhotos = storedPhotos.map(el => el.url);
         const filteredPreviews = previews.filter(el => filteredPhotos.indexOf(el) === -1);
@@ -73,6 +75,7 @@ export default function EditLot({ lot, storedPhotos }) {
 
     return (
         <MenuLayout>
+            <Head title="Редагувати лот" />
             <Row>
                 <Form onSubmit={handleSubmit}>
                     <Form.Group controlId="lotName" className="mb-3">
