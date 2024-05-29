@@ -17,7 +17,6 @@ export default function LotPanel({ lot }) {
                 <Col md={4}>
                     <h5 className="mb-1">{lot.title}</h5>
                     <div className="text-truncate">
-                        {/* {lot.description.split(' ').slice(0, 10).join(' ')}... */}
                         {lot.desc}
                     </div>
                 </Col>

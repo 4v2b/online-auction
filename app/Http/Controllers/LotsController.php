@@ -16,6 +16,7 @@ use Nette\Utils\Image;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Bid;
+use Exception;
 
 class LotsController extends Controller
 {
@@ -25,36 +26,29 @@ class LotsController extends Controller
         return Inertia::render('UserLots/LotDetails', ['lot' => $lot]);
     }
 
-    function getTracked()
-    {
-        $lots_ids = TrackedLot::select('lot_id')->where('user_id', Auth::id())->get();
-
-        $fullLots = [];
-
-        $lots = Lot::whereIn('id', $lots_ids)->get();
-        foreach ($lots as $lot) {
-            $path = Photo::where('lot_id', $lot->id)->first()->path;
-            $url = Storage::url($path);
-            $maxbid = Bid::where('lot_id', $lot->id)->max('value');
-            $fullLots[] = [
-                'id' => $lot->id,
-                'bid' => $maxbid,
-                'price' => $lot->start_price,
-                'photo' => $url,
-                'title' => $lot->title,
-                'ends_at' => $lot->ends_at
-            ];
-        }
-        return Inertia::render('TrackedLots', ['lots' => $fullLots]);
-    }
-
     function showAll()
     {
         $userId = Auth::id();
-        $userLots = Lot::where('user_id', $userId)->get();
-        //dd('controller is hit');
+        $lots = Lot::where('user_id', $userId)->get();
 
-        return Inertia::render('UserLots/MyLots', ['lots' => $userLots]);
+        $joinedLots = [];
+
+        foreach ($lots as $lot) {
+            $photo = Photo::where('lot_id', $lot->id)->first();
+            $url = Storage::url(is_null($photo) ? '' : $photo->path);
+            $bids = Bid::where('lot_id', $lot->id)->get();
+            $joinedLots[] = [
+                'id' => $lot->id,
+                'path' => $url,
+                'title' => $lot->title,
+                'desc' => $lot->description,
+                'created_at' => $lot->created_at,
+                'ends_at' => $lot->ends_at,
+                'bids' => $bids
+            ];
+        }
+
+        return Inertia::render('UserLots/MyLots', ['lots' => $joinedLots]);
     }
 
     function edit(Lot $lot)
@@ -105,17 +99,14 @@ class LotsController extends Controller
 
     function destroy(Lot $lot)
     {
-        $deleted = $lot->delete();
-        return redirect('/user-lots');
+        try {
+            $deleted = $lot->delete();
+        } catch (Exception $ex) {
+            Bid::where('lot_id', $lot->id)->delete();
+            $deleted = $lot->delete();
+        }
+        return redirect('/lots');
     }
-
-    function destroyTracked($id)
-    {
-        $trackedLot = TrackedLot::where('lot_id', $id)->where('user_id', Auth::id())->first();
-        $deleted = $trackedLot->delete();
-        return redirect()->back();
-    }
-
 
     function create()
     {
@@ -145,19 +136,5 @@ class LotsController extends Controller
             CategoryLot::create(['lot_id' => $lot->id, 'category_id' => $category]);
         }
         return redirect(route('lot.all'));
-    }
-
-    function track(Request $q)
-    {
-        $validated = $q->validate([
-            'id' => 'required|numeric'
-        ]);
-        $trackedLot = TrackedLot::where('lot_id', $validated['id'])->where('user_id', Auth::id())->first();
-        if (is_null($trackedLot)) {
-            TrackedLot::create(['lot_id' => $validated['id'], 'user_id' => Auth::id()]);
-        } else {
-            $deleted = $trackedLot->delete();
-        }
-        return redirect()->back();
     }
 }

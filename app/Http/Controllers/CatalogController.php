@@ -110,7 +110,7 @@ class CatalogController extends Controller
         $categories = [];
 
         foreach ($categoriesLots as $catLot) {
-            $categories[] = Category::select('name')->where('id', $catLot->category_id)->first();
+            $categories[] = Category::where('id', $catLot->category_id)->first();
         }
 
         $photos = Photo::select('path')->where('lot_id', $id)->get();
