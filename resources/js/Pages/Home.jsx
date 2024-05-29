@@ -15,8 +15,8 @@ export default function Home({ latestItems, cheapestItems }) {
                 <Container>
                     <Row className="mt-5">
                         <Col>
-                            <h1>Заголовок</h1>
-                            <p>Бла бла бла</p>
+                            <h1>Головна</h1>
+                            <p>Доступні категорії</p>
                             <div className="d-flex flex-wrap">
                                 <Button href={'/catalog'} className="mr-3 mb-3" variant="primary">
                                     {'Всі лоти'}

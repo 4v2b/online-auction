@@ -63,7 +63,7 @@ export default function CreateLot() {
 
     function handleSubmit(e) {
         e.preventDefault();
-        post('/user-lots', {
+        post('/lots', {
             forceFormData: true
         });
     };

@@ -1,5 +1,5 @@
 import { Button } from "react-bootstrap";
-import {PlusLg } from 'react-bootstrap-icons';
+import { PlusLg } from 'react-bootstrap-icons';
 import LotPanel from "@/Components/LotPanel";
 import { Link, Head } from "@inertiajs/react";
 import Navbar from "@/Components/NavBar";
@@ -12,10 +12,10 @@ export default function MyLots({ lots }) {
 
     return (
         <MenuLayout>
-                        <Head title="Опубліковані лоти" />
+            <Head title="Опубліковані лоти" />
 
             {panels}
-            <Button href='/lots/create'><PlusLg style={{display:"inline"}}/> Створити</Button>
+            <Button href='/lots/create'><PlusLg style={{ display: "inline" }} /> Створити</Button>
         </MenuLayout>
     );
 

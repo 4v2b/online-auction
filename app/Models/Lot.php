@@ -24,4 +24,6 @@ class Lot extends Model
         'start_price',
         'user_id'
     ];
+
+    protected $dates = ['ends_at', 'created_at'];
 }

@@ -9,12 +9,6 @@ class Bid extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-
     public $timestamps = false;
 
     protected $fillable = [
@@ -22,4 +16,6 @@ class Bid extends Model
         'user_id',
         'lot_id'
     ];
+
+    protected $dates = ['set_at'];
 }

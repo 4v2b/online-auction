@@ -12,8 +12,8 @@ export default function NavBar() {
             <Container fluid>
                 <Nav.Link as={Link} href="/" aria-label="Home" className='me-2'>
                     <House />
-                </Nav.Link>                <SearchBar categories={categories} />
-
+                </Nav.Link>
+                <SearchBar categories={categories} />
                 <Navbar.Toggle aria-controls="navbar-nav" />
                 <Navbar.Collapse id="navbar-nav">
                     <Nav className="ms-auto d-flex align-items-center">

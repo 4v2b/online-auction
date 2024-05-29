@@ -21,7 +21,7 @@ export default function Contacts(
                 <Row key={index}>
                     <Col>
                         <Form.Group controlId={`contactType-${index}`}>
-                            <Form.Label>Contact Type</Form.Label>
+                            <Form.Label>Тип контакту</Form.Label>
                             <Form.Control
                                 as="select"
                                 value={contact.type}
@@ -39,7 +39,7 @@ export default function Contacts(
                     </Col>
                     <Col>
                         <Form.Group controlId={`contactValue-${index}`}>
-                            <Form.Label>Contact Value</Form.Label>
+                            <Form.Label>Значення контакту</Form.Label>
                             <Form.Control
                                 type="text"
                                 value={contact.value}

@@ -2,7 +2,7 @@ import { Link, Head, usePage, router } from '@inertiajs/react';
 import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
 import Row from 'react-bootstrap/Row';
-import { Carousel, Container, Form, Image, ListGroup, FloatingLabel, Button } from 'react-bootstrap';
+import { Carousel, Container, Form, Image, ListGroup, FloatingLabel, Button, Badge } from 'react-bootstrap';
 import MainLayout from '@/Layouts/MainLayout';
 import { useState, useEffect } from 'react';
 
@@ -38,53 +38,44 @@ export default function LotPage({ lot, photos, bids, chosenCategories }) {
         return () => clearInterval(timer);
     }, []);
 
-    const lastBids = bids?.map((el, index) => {
-        return (<ListGroup.Item key={index}>{el.userName}: {el.value}₴ {el.set_at}</ListGroup.Item>);
-    });
+    const lastBids = bids?.map((el, index) => (
+        <ListGroup.Item key={index}>
+            {el.userName}: <b>{el.value} грн</b> <em>{el.set_at}</em>
+        </ListGroup.Item>
+    ));
 
-    const carouselItems = photos.map((photo, index) => {
-        return (
-            <Carousel.Item key={index}><Image src={photo} fluid /></Carousel.Item>
-        );
-    });
+    const carouselItems = photos.map((photo, index) => (
+        <Carousel.Item key={index} className="text-center">
+            <Image src={photo} fluid style={{ height: 400, objectFit: 'contain' }} />
+        </Carousel.Item>
+    ));
 
-    const categoryItems = chosenCategories.map((category, index) => {
-        return (
-            <Nav.Item key={index}>
-                <Nav.Link as={Link} href={`/categories/${category.id}`}>{category.name}</Nav.Link>
-            </Nav.Item>
-        );
-    });
+    const categoryItems = chosenCategories.map((category, index) => (
+        <Badge bg="secondary" className="me-2" key={index} as={Link} href={`/categories/${category.id}`} style={{ textDecoration: 'none', color: 'white' }}>
+            {category.name}
+        </Badge>
+    ));
 
-    function handleSubmitBid (event) {
+    function handleSubmitBid(event) {
         event.preventDefault();
         const bidAmount = event.target.elements.bid.value;
-       // const bidAmount = formData.get('bid');
-
-        router.post(`/bids/create/${lot.id}`, {bid: bidAmount});
-
-       // console.log(`Placing bid: ${bidAmount}₴`);
-    };
+        router.post(`/bids/create/${lot.id}`, { bid: bidAmount });
+    }
 
     return (
         <MainLayout>
-                        <Head title={lot.title} />
-
+            <Head title={lot.title} />
             <Container>
                 <Row>
                     <Col xs={12} md={8}>
-                        <Carousel>
+                        <Carousel variant='dark' className='d-flex justify-content-between'>
                             {carouselItems}
                         </Carousel>
-                        <Nav className="mt-3">
+                        <div className="mt-3">
                             {categoryItems}
-                        </Nav>
-                        <h3 className="mt-3">
-                            {lot.title}
-                        </h3>
-                        <div>
-                            {lot.description}
                         </div>
+                        <h3 className="mt-3">{lot.title}</h3>
+                        <div>{lot.description}</div>
                     </Col>
                     <Col xs={12} md={4}>
                         <div className="mt-3">
@@ -92,7 +83,7 @@ export default function LotPage({ lot, photos, bids, chosenCategories }) {
                                 <span>Час аукціону сплив</span>
                             ) : (
                                 <span>
-                                    Залишилося часу: 
+                                    Залишилося часу:
                                     {timeLeft.days !== undefined && `${timeLeft.days} дн `}
                                     {timeLeft.minutes !== undefined && timeLeft.hours === undefined && `${timeLeft.minutes} хв `}
                                     {timeLeft.days === undefined && timeLeft.minutes !== undefined && timeLeft.hours !== undefined && ` ${timeLeft.hours} год ${timeLeft.minutes} хв `}
@@ -101,20 +92,17 @@ export default function LotPage({ lot, photos, bids, chosenCategories }) {
                             )}
                         </div>
                         <ListGroup className="mt-3">
-                            {auth.user ? (
+                            {auth.user && (
                                 <ListGroup.Item>
+                                    <div className='mb-1'>Початкова ціна: {lot.start_price} грн</div>
                                     <Form onSubmit={handleSubmitBid}>
-                                        <FloatingLabel
-                                            controlId="floatingInput"
-                                            label="Ваша ставка"
-                                            className="mb-3"
-                                        >
+                                        <FloatingLabel controlId="floatingInput" label="Ваша ставка" className="mb-3">
                                             <Form.Control type="number" name="bid" step="0.001" />
                                         </FloatingLabel>
                                         <Button type="submit">Підтвердити ставку</Button>
                                     </Form>
                                 </ListGroup.Item>
-                            ) : <></>}
+                            )}
                             {lastBids}
                         </ListGroup>
                     </Col>

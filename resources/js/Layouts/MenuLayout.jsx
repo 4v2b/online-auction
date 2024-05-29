@@ -18,8 +18,10 @@ export default function MenuLayout({children}) {
                         <Nav className="flex-column">
                             <Nav.Link href={route('lot.all')}>Лоти</Nav.Link>
                             <Nav.Link href={route('bids.all')}>Ставки</Nav.Link>
-                            <Nav.Link href={route('userinfo')}>Персональні дані</Nav.Link>
                             <Nav.Link href={route('tracked.all')}>Список бажаного</Nav.Link>
+                            <Nav.Link href={route('userinfo')}>Персональні дані</Nav.Link>
+                            <Nav.Link href={route('profile.edit')}>Обліковий запис</Nav.Link>
+
                         </Nav>
                     </Col>
                     <Col sm={9}>

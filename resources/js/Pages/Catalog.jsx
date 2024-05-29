@@ -29,6 +29,7 @@ export default function Catalog({ lots, message }) {
                             <LotCard
                                 id={lot.id}
                                 currentBid={lot.currentBid}
+                                categories={lot.categories}
                                 preview={lot.preview}
                                 price={lot.price}
                                 title={lot.title}

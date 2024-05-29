@@ -136,7 +136,6 @@ class LotsController extends Controller
             ]
         );
 
-
         foreach ($validated['photos'] as $file) {
             $path = $file->store('uploads/' . $q->user()->id, 'public');
             Photo::create(['path' => $path, 'lot_id' => $lot->id]);
